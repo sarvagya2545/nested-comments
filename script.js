@@ -25,8 +25,8 @@ let UIcontroller = (function() {
                     <div class="author">%AUTHOR%</div>
                     <div class="bottom">
                         <div class="buttons">
-                            <button>1 &uarr;</button>
-                            <button>&darr; 2</button>
+                            <button><span>0</span> &uarr;</button>
+                            <button>&darr; <span>0</span></button>
                         </div>
                         <form class="reply">
                             <input type="text" name="text" id="reply" placeholder="Reply">
@@ -72,8 +72,31 @@ let UIcontroller = (function() {
         currentNode.insertAdjacentHTML('beforeend', html);
     }
 
+    function addVoteUI(location, inc) {
+        let currentNode = root;
+
+        for(let i = 0; i < location.length - 1; i++) {
+            currentNode = currentNode.children[location[i]].children[1];
+        }
+
+        let btnsArr = currentNode
+            .children[location[0]]
+            .children[0]
+            .children[2]
+            .children[0];
+
+        if(inc) {
+            let num = btnsArr.children[0].children[0].innerHTML;
+            btnsArr.children[0].children[0].innerHTML = (parseInt(num) + 1).toString();
+        } else {
+            let num = btnsArr.children[1].children[0].innerHTML;
+            btnsArr.children[1].children[0].innerHTML = (parseInt(num) + 1).toString();
+        }
+    }
+
     return {
-        addCommentUI
+        addCommentUI,
+        addVoteUI
     }
 
 })();
@@ -106,9 +129,21 @@ let LogicController = (function() {
         return commentsList;
     }
 
+    function addVoteData(location, inc) {
+        let nestedCommentsList = commentsList;
+        for(let i = 0; i < location.length - 1; i++) {
+            nestedCommentsList = nestedCommentsList[location[i]].replies;
+        }
+        if(inc)
+            nestedCommentsList[location[0]].likes++;
+        else
+            nestedCommentsList[location[0]].dislikes++;
+    }
+
     return {
         addCommentData,
-        getCommentsList
+        getCommentsList,
+        addVoteData
     }
 
 })();
@@ -135,13 +170,17 @@ let mainController = (function(ui, logic) {
         })
     }
 
-    function newAddEventListener(location,index) {
+    function newAddEventListeners(location,index) {
         const locationString = location.join('-');
         const qString = `${locationString}${location.length ? '-' : ''}${index}`;
         locationElement = document.querySelector(`[data-location='${qString}']`);
         // console.log('loc', qString);
         // console.log(locationElement.children[0].children[2].children[1]);
         const replyForm = locationElement.children[0].children[2].children[1]
+        const buttonsPallette = locationElement.children[0].children[2].children[0];
+        const upvoteBtn = buttonsPallette.children[0];
+        const downvoteBtn = buttonsPallette.children[1];
+
         replyForm.addEventListener('submit', e => {
             e.preventDefault();
             locationArray = 
@@ -166,6 +205,34 @@ let mainController = (function(ui, logic) {
 
             addComment(data, locationArray);
             replyForm.elements['text'].value = '';
+        });
+
+
+        upvoteBtn.addEventListener('click', e => {
+            let elem = e.target;
+            while(!elem.dataset['location'])
+                elem = elem.parentElement;
+
+            // console.log(elem);
+            locationArray = elem.dataset['location']
+                    .split('-')
+                    .map(el => parseInt(el))
+            ;
+
+            upvoteComment(locationArray);
+        });
+
+        downvoteBtn.addEventListener('click', e => {
+            let elem = e.target;
+            while(!elem.dataset['location'])
+                elem = elem.parentElement;
+
+            locationArray = elem.dataset['location']
+                    .split('-')
+                    .map(el => parseInt(el))
+            ;
+            
+            downvoteComment(locationArray);
         })
     }
 
@@ -173,7 +240,17 @@ let mainController = (function(ui, logic) {
         index = logic.addCommentData(data, location);
         // console.log(index);
         ui.addCommentUI(data, location, index);
-        newAddEventListener(location, index);
+        newAddEventListeners(location, index);
+    }
+
+    function upvoteComment(location) {
+        logic.addVoteData(location, true);
+        ui.addVoteUI(location, true);
+    }
+
+    function downvoteComment(location) {
+        logic.addVoteData(location, false);
+        ui.addVoteUI(location, false);
     }
 
     return {

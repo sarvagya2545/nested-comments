@@ -22,7 +22,7 @@ let UIcontroller = (function() {
                     <div class="text">%TEXT%</div>
                     <div class="author">%AUTHOR%</div>
                     <form class="reply">
-                        <input type="text" name="text" id="reply">
+                        <input type="text" name="text" id="reply" placeholder="Reply">
                         <button type="submit">Reply</button>
                     </form>
                 </div>

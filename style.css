@@ -26,9 +26,21 @@ section#type-box {
     align-items: center;
 }
 
+.bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.buttons button {
+    all: unset;
+    cursor: pointer;
+    border: 1px solid black;
+    padding: .4rem;
+}
+
 .reply {
     width: fit-content;
-    margin-left: auto;
 }
 
 #comment-box input,

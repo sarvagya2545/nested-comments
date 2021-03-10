@@ -6,7 +6,9 @@
         {
             author: String,
             text: String,
-            replies: [Comment]
+            replies: [Comment],
+            likes: 0,
+            dislikes: 0
         }
     ]
 
@@ -21,10 +23,16 @@ let UIcontroller = (function() {
                 <div class="comment">
                     <div class="text">%TEXT%</div>
                     <div class="author">%AUTHOR%</div>
-                    <form class="reply">
-                        <input type="text" name="text" id="reply" placeholder="Reply">
-                        <button type="submit">Reply</button>
-                    </form>
+                    <div class="bottom">
+                        <div class="buttons">
+                            <button>1 &uarr;</button>
+                            <button>&darr; 2</button>
+                        </div>
+                        <form class="reply">
+                            <input type="text" name="text" id="reply" placeholder="Reply">
+                            <button type="submit">Reply</button>
+                        </form>
+                    </div>
                 </div>
                 <div class="replies"></div>
             </div>
@@ -45,6 +53,7 @@ let UIcontroller = (function() {
     }
 
     function getTargetNode(location, currentNode = root) {
+        // console.log(location);
         if(location.length === 0) {
             return currentNode;
         }
@@ -52,15 +61,14 @@ let UIcontroller = (function() {
         let [ index, ...newLocation ] = location;
         newLocation = newLocation || [];
         let newNode = currentNode.children[index].children[1];
-        console.log(index, newNode);
-        console.log(newNode.__proto__);
+        // console.log(index, newNode);
         return getTargetNode(newLocation, newNode);
     }
 
     function addCommentUI(data, location, index) {
         const currentNode = getTargetNode(location);
         const html = createReplyHtml(data, location, index);
-        // console.log(currentNode);
+        // console.log('currentNode', currentNode);
         currentNode.insertAdjacentHTML('beforeend', html);
     }
 
@@ -80,8 +88,11 @@ let LogicController = (function() {
             nestedCommentsList.push({
                 author: data.author,
                 text: data.text,
-                replies: []
+                replies: [],
+                likes: 0,
+                dislikes: 0
             });
+            // console.log(commentsList);
             return nestedCommentsList.length - 1;
         }
 
@@ -120,6 +131,7 @@ let mainController = (function(ui, logic) {
             if(!data.author) data.author = 'Anonymous';
 
             addComment(data, []);
+            commentBox.elements['text'].value = '';
         })
     }
 
@@ -128,12 +140,13 @@ let mainController = (function(ui, logic) {
         const qString = `${locationString}${location.length ? '-' : ''}${index}`;
         locationElement = document.querySelector(`[data-location='${qString}']`);
         // console.log('loc', qString);
-        // console.log(locationElement.children[0].children[2]);
-        const replyForm = locationElement.children[0].children[2]
+        // console.log(locationElement.children[0].children[2].children[1]);
+        const replyForm = locationElement.children[0].children[2].children[1]
         replyForm.addEventListener('submit', e => {
             e.preventDefault();
             locationArray = 
                 e.target
+                    .parentElement
                     .parentElement
                     .parentElement
                     .dataset['location']
@@ -149,16 +162,16 @@ let mainController = (function(ui, logic) {
             }
 
             if(!data.author) data.author = 'Anonymous';
-            console.log(data);
+            // console.log(data, locationArray);
 
             addComment(data, locationArray);
-
-            // console.log(locationArray);
+            replyForm.elements['text'].value = '';
         })
     }
 
     function addComment(data, location) {
         index = logic.addCommentData(data, location);
+        // console.log(index);
         ui.addCommentUI(data, location, index);
         newAddEventListener(location, index);
     }

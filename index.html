@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Comment Section</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <template>
+        <div class="comment-container">
+            <div class="comment">
+                <div class="text"></div>
+                <div class="author"></div>
+                <form class="reply">
+                    <input type="text" name="text" id="reply">
+                    <button type="submit">Reply</button>
+                </form>
+            </div>
+        </div>
+    </template>
+
+    <section id="type-box">
+        <form id="comment-box">
+            <label for="text">Type your comment here:</label>
+            <input type="text" placeholder="Comment" name="text">
+            <input type="text" placeholder="Your name" name="author">
+            <button type="submit">POST</button>
+        </form>
+    </section>
+    <section id="comments">
+        <div class="comment-list">
+            
+        </div>
+    </section>
+</body>
+</html>

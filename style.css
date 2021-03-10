@@ -1,0 +1,50 @@
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    font-family: sans-serif;
+}
+
+html {
+    font-size: 62.5%;
+}
+
+body {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    font-size: 1.5rem;
+}
+
+section#type-box {
+    padding: 1em;
+}
+
+#comment-box {
+}
+
+section#comments {
+    display: block;
+    padding : 1.2em;
+    background-color: lightcoral;
+    flex: 1;
+}
+
+#comment-list {
+    display: flex;
+    flex-direction: column;
+}
+
+.comment {
+    background-color: #fff;
+    padding: 1em;
+    margin: 10px;
+}
+
+.author {
+    font-size: 1.4rem;
+}
+
+.replies {
+    margin-left: 6rem;
+}
